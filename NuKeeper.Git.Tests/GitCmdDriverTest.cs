@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -118,15 +119,53 @@ namespace NuKeeper.Git.Tests
                 WorkingDirectory = workingFolder
             };
 
-            var process = Process.Start(processInfo);
+            if (OperatingSystem.IsMacCatalyst())
+                return await StartGitProcessMacCatalyst(processInfo);
+            else
+                return await StartGitProcessNonMacCatalyst(processInfo);
+        }
+
+        private static async Task<string> StartGitProcessMacCatalyst(ProcessStartInfo processStartInfo)
+        {
+            var process = Process.Start(processStartInfo);
             var textOut = await process.StandardOutput.ReadToEndAsync();
             var textErr = await process.StandardError.ReadToEndAsync();
 
-            process.WaitForExit();
+            await process.WaitForExitAsync();
 
             Assert.AreEqual(0, process.ExitCode, $"Git exited with code {process.ExitCode}: {textErr}");
 
             return textOut.TrimEnd(Environment.NewLine.ToCharArray());
         }
+        
+        private static async Task<string> StartGitProcessNonMacCatalyst(ProcessStartInfo processStartInfo)
+        {
+            var process = new Process()
+            {
+                StartInfo = processStartInfo
+            };
+
+            string textOut = string.Empty;
+            string textErr = string.Empty;
+            process.OutputDataReceived += (sender, data) =>
+            {
+                textOut += data.Data;
+            };
+
+            process.ErrorDataReceived += (sender, data) =>
+            {
+                textErr += data.Data;
+            };
+            
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            await process.WaitForExitAsync();
+
+            Assert.AreEqual(0, process.ExitCode, $"Git exited with code {process.ExitCode}: {textErr}");
+
+            return textOut.TrimEnd(Environment.NewLine.ToCharArray());
+        }
+
     }
 }

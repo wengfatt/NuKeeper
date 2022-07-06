@@ -87,7 +87,7 @@ namespace NuKeeper.Engine
 
             var projectOptS = (projects.Count > 1) ? "s" : string.Empty;
 
-            builder.AppendLine($"{updates.Count} packages were updated in {projects.Count} project{projectOptS}:");
+            builder.AppendLine((string)$"{updates.Count} packages were updated in {projects.Count} project{projectOptS}:");
             builder.AppendLine(packageNames);
             builder.AppendLine("<details>");
             builder.AppendLine("<summary>Details of updated packages</summary>");
@@ -122,12 +122,12 @@ namespace NuKeeper.Engine
 
             if (oldVersions.Count == 1)
             {
-                builder.AppendLine($"NuKeeper has generated a {changeLevel} update of {packageId} to {newVersion} from {oldVersions.JoinWithCommas()}");
+                builder.AppendLine((string)$"NuKeeper has generated a {changeLevel} update of {packageId} to {newVersion} from {oldVersions.JoinWithCommas()}");
             }
             else
             {
-                builder.AppendLine($"NuKeeper has generated a {changeLevel} update of {packageId} to {newVersion}");
-                builder.AppendLine($"{oldVersions.Count} versions of {packageId} were found in use: {oldVersions.JoinWithCommas()}");
+                builder.AppendLine((string)$"NuKeeper has generated a {changeLevel} update of {packageId} to {newVersion}");
+                builder.AppendLine((string)$"{oldVersions.Count} versions of {packageId} were found in use: {oldVersions.JoinWithCommas()}");
             }
 
             if (updates.Selected.Published.HasValue)
@@ -137,7 +137,7 @@ namespace NuKeeper.Engine
                 var pubDate = updates.Selected.Published.Value.UtcDateTime;
                 var ago = TimeSpanFormat.Ago(pubDate, DateTime.UtcNow);
 
-                builder.AppendLine($"{packageWithVersion} was published at {pubDateString}, {ago}");
+                builder.AppendLine((string)$"{packageWithVersion} was published at {pubDateString}, {ago}");
             }
 
             var highestVersion = updates.Packages.Major?.Identity.Version;
@@ -154,7 +154,7 @@ namespace NuKeeper.Engine
             }
             else
             {
-                builder.AppendLine($"{updates.CurrentPackages.Count} project updates:");
+                builder.AppendLine((string)$"{updates.CurrentPackages.Count} project updates:");
             }
 
             foreach (var current in updates.CurrentPackages)
@@ -211,9 +211,9 @@ namespace NuKeeper.Engine
 
             var highestPublishedAt = HighestPublishedAt(updates.Packages.Major.Published);
 
-            builder.AppendLine(
-                $"There is also a higher version, {highest}{highestPublishedAt}, " +
-                $"but this was not applied as only {allowedChange} version changes are allowed.");
+            builder.AppendLine((string)
+                               $"There is also a higher version, {highest}{highestPublishedAt}, " +
+                               $"but this was not applied as only {allowedChange} version changes are allowed.");
         }
 
         private static string HighestPublishedAt(DateTimeOffset? highestPublishedAt)
