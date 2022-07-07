@@ -16,6 +16,7 @@ using SearchCodeRequest = NuKeeper.Abstractions.CollaborationModels.SearchCodeRe
 using SearchCodeResult = NuKeeper.Abstractions.CollaborationModels.SearchCodeResult;
 using User = NuKeeper.Abstractions.CollaborationModels.User;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace NuKeeper.GitHub
 {
@@ -261,11 +262,10 @@ namespace NuKeeper.GitHub
             {
                 if (ex.HttpResponse?.Body != null)
                 {
-                    dynamic response = JsonConvert.DeserializeObject(ex.HttpResponse.Body.ToString());
-                    if (response?.errors != null && response.errors.Count > 0)
-                    {
-                        throw new NuKeeperException(response.errors.First.message.ToString(), ex);
-                    }
+                    var response = JObject.Parse(ex.HttpResponse.Body.ToString());
+                    var errors = response.SelectToken("errors");
+                    if (errors != null && errors is JArray { Count: > 0 } array)
+                        throw new NuKeeperException(array[0]["message"].ToString(), ex);
                 }
 
                 throw new NuKeeperException(ex.Message, ex);

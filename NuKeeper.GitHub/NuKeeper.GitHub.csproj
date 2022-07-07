@@ -9,7 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Octokit" Version="0.50.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Octokit" Version="0.52.0" />
+    <PackageReference Remove="Microsoft.CodeAnalysis.FxCopAnalyzers" />
   </ItemGroup>
 
   <ItemGroup>
